@@ -15,10 +15,10 @@ if ($argv && $argv[1]) {
         $file_name = castom_replase($plugin_name , $file );
         rename($file, $file_name);
         try {
-            $old = file_get_contents($file);
+            $old = file_get_contents($file_name);
             $str = castom_replase($plugin_name , $old );
             if ($str != $old) {
-                file_put_contents($file, $str);
+                file_put_contents($file_name, $str);
             }
         } catch (\Exception $e) {
             echo $e->getMessage();
