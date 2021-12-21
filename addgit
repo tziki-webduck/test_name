@@ -1,0 +1,67 @@
+<?php
+$path = ".";
+global $data;
+
+if ($argv && $argv[1]) {
+    $plugin_name = $argv[1];
+    echo $plugin_name;
+    scandDir(".");
+    foreach ($data as $file){
+        if(basename($file) === "addgit" )
+        continue;
+        if(is_dir($file)){
+            continue;
+        } 
+        $file_name = castom_replase($plugin_name , $file );
+        rename($file, $file_name);
+        try {
+            $old = file_get_contents($file);
+            $str = castom_replase($plugin_name , $old );
+            if ($str != $old) {
+                file_put_contents($file, $str);
+            }
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+}
+else{
+    echo "pleas insert name";
+}
+
+
+function scandDir($target) {
+    global $data;
+
+    if(is_dir($target)){
+        
+        $files = glob( $target . '*', GLOB_MARK ); //GLOB_MARK adds a slash to directories returned
+        
+        foreach( $files as $file )
+        {
+            if ( $file != "..\\")
+            scandDir( $file );
+        }
+        
+    } 
+    $is_main = false;
+    $data [] = $target;
+    // echo $target;     
+    // echo "<br>";  
+
+}
+
+function castom_replase( $name ,$str ){
+    // if(isset($_POST['description']))
+    // $str = str_replace("description_replace", $_POST['description']  ,$str);
+    // if(isset($_POST['display_name']))
+    // $str = str_replace("display_name_replace", $_POST['display_name']  ,$str);
+
+    
+    $str = str_replace("WebDuckUpdater", "WebDuckUpdater_".$name ,$str);
+
+    $str = str_replace("replace_name", $name ,$str);
+    $str = str_replace("REPLACE_NAME", strtoupper( $name )  ,$str);
+    $str = str_replace("Replace_name", ucfirst( $name )  ,$str);
+    return $str;
+}
