@@ -24,7 +24,7 @@ jobs:
     - name: run add git
       run: sudo php addgit ${{github.event.inputs.name}}
     - name: give list
-      run: ls
+      run: ls -r
 
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
