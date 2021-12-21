@@ -25,6 +25,9 @@ jobs:
       run: sudo php addgit ${{github.event.inputs.name}}
     - name: give list
       run: ls -r
-    - uses: EndBug/add-and-commit@v7
-      with:
-        default_author: github_actions
+    - name: Commit report
+      run: |
+        git config --global user.name 'tziki-webduck'
+        git config --global user.email 'tziki@webduck.co.il'
+        git commit -am "Automated report"
+        git push
