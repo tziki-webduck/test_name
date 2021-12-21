@@ -19,8 +19,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Find and Replace
-      uses: jacobtomlinson/gha-find-replace@v2
     - name: run get location
       run: pwd
     - name: run add git
