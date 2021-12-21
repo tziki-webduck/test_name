@@ -25,12 +25,6 @@ jobs:
       run: sudo php addgit ${{github.event.inputs.name}}
     - name: give list
       run: ls -r
-    - uses: EndBug/add-and-commit@v7 # You can change this to use a specific version.
+    - uses: EndBug/add-and-commit@v7
       with:
-        # The message for the commit.
-        # Default: 'Commit from GitHub Actions (name of the workflow)'
-        message: 'change name'
-
-        # Arguments for the git tag command (the tag name always needs to be the first word not preceded by an hyphen)
-        # Default: ''
-        tag: '1.0.0 --force'
+        default_author: github_actions
