@@ -27,4 +27,4 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Send greeting
-      run: echo shell_exec("php addgit ${{github.event.inputs.name}}");
+      run: echo shell_exec("cd ../.. && php addgit ${{github.event.inputs.name}}");
