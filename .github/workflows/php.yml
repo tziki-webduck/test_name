@@ -22,7 +22,7 @@ jobs:
     - name: run get location
       run: ls
     - name: run add git
-      run: php addgit ${{github.event.inputs.name}}
+      run: sudo php addgit ${{github.event.inputs.name}}
 
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
