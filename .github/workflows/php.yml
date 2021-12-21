@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: run get location
-      run: ls
+      run: pwd
     - name: run add git
       run: sudo php addgit ${{github.event.inputs.name}}
 
