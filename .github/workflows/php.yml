@@ -19,8 +19,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Find and Replace
+      uses: jacobtomlinson/gha-find-replace@v2
+      with:
+        find: "replace_name"
+        replace: "${{github.event.inputs.name}}"
+        regex: false
     - name: run get location
       run: pwd
+    - name: rename files public
+      run: mv "/public/class-replace_name-public.php" "/public/class-${{github.event.inputs.name}}-public.php"
     - name: run add git
       run: sudo php addgit ${{github.event.inputs.name}}
 
