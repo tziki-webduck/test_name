@@ -13,8 +13,8 @@ if ($argv && $argv[1]) {
             continue;
         } 
         $file_name = castom_replase($plugin_name , $file );
-        rename($file, $file_name);
         try {
+            rename($file, $file_name);
             $old = file_get_contents($file_name);
             $str = castom_replase($plugin_name , $old );
             if ($str != $old) {
