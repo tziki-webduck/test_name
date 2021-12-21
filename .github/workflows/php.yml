@@ -27,6 +27,8 @@ jobs:
       run: ls -r
     - name: Commit report
       run: |
+        rm -f .git/index
+        git reset
         git config --global user.name 'tziki-webduck'
         git config --global user.email 'tziki@webduck.co.il'
         git commit -am "Automated report"
