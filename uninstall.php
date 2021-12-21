@@ -22,7 +22,7 @@
  * @link       WebDuck
  * @since      1.0.0
  *
- * @package    Replace_name
+ * @package    Test_name
  */
 
 // If uninstall not called from WordPress, then exit.

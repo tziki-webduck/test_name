@@ -21,7 +21,7 @@
  * @subpackage Noti_woo/includes
  * @author     avitrop <Avitrop@gmail.com>
  */
-class WebDuckUpdater
+class WebDuckUpdater_test_name_test_name
 {
 
 	private $plugin_name;
