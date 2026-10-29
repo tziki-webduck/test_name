@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e7490">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="style.css">
+<title>המזגנים שלי</title>
+</head>
+<body>
+<header class="top">
+  <h1>המזגנים שלי</h1>
+  <span id="shabbat-badge" class="badge" hidden></span>
+</header>
+
+<main>
+  <section id="view-devices" class="view active">
+    <div class="bulk">
+      <button class="btn ghost" data-bulk="off">כבה הכל</button>
+      <button class="btn ghost" id="refresh-all">רענן</button>
+    </div>
+    <div id="devices" class="cards"></div>
+    <div id="no-devices" class="empty" hidden>
+      <p>עדיין לא הוגדרו מזגנים.</p>
+      <button class="btn primary" data-goto="settings">חיפוש מזגנים ברשת</button>
+    </div>
+  </section>
+
+  <section id="view-rules" class="view">
+    <div class="row-between">
+      <h2>תזמונים</h2>
+      <button class="btn primary" id="new-rule">+ תזמון חדש</button>
+    </div>
+    <div id="rules" class="list"></div>
+  </section>
+
+  <section id="view-shabbat" class="view">
+    <h2>שעון שבת</h2>
+    <div class="panel" id="shabbat-times"></div>
+    <div class="panel">
+      <label class="switch-row">
+        <span>
+          <b>שמירה על המצב במהלך שבת</b>
+          <small>אם המזגן נכבה (למשל אחרי הפסקת חשמל) או שמישהו שינה אותו, הוא יוחזר לתוכנית.</small>
+        </span>
+        <input type="checkbox" id="enforce">
+      </label>
+    </div>
+    <div class="row-between">
+      <h3>תוכנית השבת</h3>
+      <button class="btn primary" id="shabbat-wizard">יצירת תוכנית</button>
+    </div>
+    <div id="shabbat-rules" class="list"></div>
+    <p class="hint">התזמונים מתבצעים מהשרת בבית, הטלפון לא צריך להיות דלוק או מחובר במהלך השבת.</p>
+  </section>
+
+  <section id="view-settings" class="view">
+    <h2>מזגנים</h2>
+    <div class="panel">
+      <button class="btn primary wide" id="scan">🔍 חיפוש מזגנים ברשת</button>
+      <div id="scan-result"></div>
+      <details>
+        <summary>הוספה ידנית לפי כתובת IP</summary>
+        <form id="add-form" class="form-grid">
+          <label>שם <input name="name" placeholder="סלון" required></label>
+          <label>כתובת IP <input name="host" placeholder="192.168.1.50" inputmode="decimal" required></label>
+          <button class="btn primary">הוספה</button>
+        </form>
+      </details>
+      <div id="device-admin" class="list"></div>
+    </div>
+
+    <h2>מיקום וזמני שבת</h2>
+    <form id="settings-form" class="panel form-grid">
+      <label>עיר <select name="city" id="city"></select></label>
+      <label>הדלקת נרות (דקות לפני השקיעה) <input type="number" name="candle_minutes" min="0" max="60"></label>
+      <label>יציאת שבת
+        <select name="havdalah_mode">
+          <option value="tzeit">צאת הכוכבים (8.5°)</option>
+          <option value="sunset">שקיעה + דקות</option>
+        </select>
+      </label>
+      <label>דקות נוספות ליציאת שבת <input type="number" name="havdalah_minutes" min="0" max="90"></label>
+      <label>בדיקת שמירה בשבת כל (דקות) <input type="number" name="enforce_interval_min" min="2" max="60"></label>
+      <label>רענון מצב כל (שניות) <input type="number" name="poll_interval_sec" min="10" max="600"></label>
+      <button class="btn primary">שמירה</button>
+    </form>
+
+    <h2>יומן פעולות</h2>
+    <div id="log" class="panel log"></div>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button data-tab="devices" class="active"><span>❄️</span>מזגנים</button>
+  <button data-tab="rules"><span>⏰</span>תזמונים</button>
+  <button data-tab="shabbat"><span>🕯️</span>שבת</button>
+  <button data-tab="settings"><span>⚙️</span>הגדרות</button>
+</nav>
+
+<dialog id="rule-dialog">
+  <form id="rule-form" method="dialog">
+    <h3 id="rule-title">תזמון חדש</h3>
+    <label>שם <input name="name" placeholder="למשל: הדלקה בבוקר"></label>
+    <fieldset><legend>מזגנים</legend><div id="rule-devices" class="chips"></div></fieldset>
+    <label>מתי
+      <select name="type">
+        <option value="weekly">שעה קבועה בימים נבחרים</option>
+        <option value="shabbat_start">ביחס לכניסת שבת</option>
+        <option value="shabbat_end">ביחס ליציאת שבת</option>
+        <option value="once">חד פעמי (תאריך ושעה)</option>
+      </select>
+    </label>
+    <div data-when="weekly">
+      <label>שעה <input type="time" name="time" value="07:00"></label>
+      <div class="chips days" id="rule-days"></div>
+    </div>
+    <div data-when="shabbat">
+      <label>דקות (שלילי = לפני, חיובי = אחרי) <input type="number" name="offset" value="0"></label>
+    </div>
+    <div data-when="once">
+      <label>תאריך ושעה <input type="datetime-local" name="at"></label>
+    </div>
+    <label>פעולה
+      <select name="power"><option value="on">הדלקה</option><option value="off">כיבוי</option></select>
+    </label>
+    <div data-power="on" class="form-grid">
+      <label>מצב <select name="mode">
+        <option value="">ללא שינוי</option><option value="cool">קירור</option><option value="heat">חימום</option>
+        <option value="fan">מאוורר</option><option value="dry">ייבוש</option></select></label>
+      <label>טמפרטורה <input type="number" name="temp" min="16" max="32" placeholder="ללא שינוי"></label>
+      <label>מאוורר <select name="fan">
+        <option value="">ללא שינוי</option><option value="auto">אוטומטי</option><option value="mute">שקט</option>
+        <option value="low">נמוך</option><option value="med">בינוני</option><option value="max">גבוה</option></select></label>
+    </div>
+    <label class="switch-row"><span>חלק מתוכנית השבת (נשמר במהלך שבת)</span><input type="checkbox" name="shabbat"></label>
+    <div class="dialog-actions">
+      <button class="btn ghost" value="cancel" formnovalidate>ביטול</button>
+      <button class="btn primary" value="save">שמירה</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="wizard-dialog">
+  <form id="wizard-form" method="dialog">
+    <h3>תוכנית שבת</h3>
+    <p class="hint">בחרו מזגנים, הגדרות ושלבים. אפשר לערוך כל שלב אחר כך.</p>
+    <fieldset><legend>מזגנים</legend><div id="wizard-devices" class="chips"></div></fieldset>
+    <div class="form-grid">
+      <label>מצב <select name="mode"><option value="cool">קירור</option><option value="heat">חימום</option>
+        <option value="fan">מאוורר</option><option value="dry">ייבוש</option></select></label>
+      <label>טמפרטורה <input type="number" name="temp" min="16" max="32" value="24"></label>
+      <label>מאוורר <select name="fan"><option value="auto">אוטומטי</option><option value="mute">שקט</option>
+        <option value="low">נמוך</option><option value="med">בינוני</option><option value="max">גבוה</option></select></label>
+    </div>
+    <div id="wizard-steps"></div>
+    <button type="button" class="btn ghost" id="wizard-add">+ שלב</button>
+    <div class="dialog-actions">
+      <button class="btn ghost" value="cancel" formnovalidate>ביטול</button>
+      <button class="btn primary" value="save">יצירה</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
